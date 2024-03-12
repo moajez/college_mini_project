@@ -1,0 +1,103 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="index.js"></script>
+    <!-- <script src="main.py"></script> -->
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trie Autocomplete</title>
+</head>
+
+<body>
+    <h1>Word Suggestions</h1>
+    <input type="text" id="prefix" placeholder="Enter a prefix">
+    <button onclick="getSuggestions()">Search</button>
+    <div id="suggestions"></div>
+
+    <script>
+        class TrieNode {
+            constructor() {
+                this.children = {};
+                this.isWord = false;
+            }
+        }
+
+        class Trie {
+            constructor() {
+                this.root = new TrieNode();
+            }
+
+            insert(word) {
+                let node = this.root;
+                for (let char of word) {
+                    if (!node.children[char]) {
+                        node.children[char] = new TrieNode();
+                    }
+                    node = node.children[char];
+                }
+                node.isWord = true;
+            }
+
+            suggest(prefix) {
+                let node = this.root;
+                for (let char of prefix) {
+                    if (!node.children[char]) {
+                        return [];
+                    }
+                    node = node.children[char];
+                }
+
+                let suggestions = [];
+                this._dfs(node, prefix, suggestions);
+                return suggestions;
+            }
+
+            _dfs(node, prefix, suggestions) {
+                if (node.isWord) {
+                    suggestions.push(prefix);
+                }
+
+                for (let char in node.children) {
+                    this._dfs(node.children[char], prefix + char, suggestions);
+                }
+            }
+        }
+
+        // Function to get suggestions and display them
+        function getSuggestions() {
+            let words = ["hello", "dog", "hell", "cat", "a", "any", "the", "their", "there", "hel", "help", "helps", "helping", "call", "catch", "can", "cane", "cough", "cab", "cafe", "came", "cam", "cat", "cow"];
+            let trie = new Trie();
+            words.forEach(word => trie.insert(word));
+
+            let prefix = document.getElementById("prefix").value;
+            let suggestions = trie.suggest(prefix);
+
+            let suggestionsElement = document.getElementById("suggestions");
+            suggestionsElement.innerHTML = ""; // Clear previous suggestions
+
+            if (suggestions.length > 0) {
+                suggestionsElement.innerHTML = "<h3>Suggestions:</h3>";
+                suggestions.forEach(suggestion => {
+                    suggestionsElement.innerHTML += "<p>" + suggestion + "</p>";
+                });
+            } else {
+                suggestionsElement.innerHTML = "<p>No suggestions found.</p>";
+            }
+        }
+    </script>
+</body>
+
+</html>
